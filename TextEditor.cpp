@@ -8,6 +8,7 @@
 
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui.h" // for imGui::GetCurrentWindow()
+#include "imgui_internal.h"
 
 // TODO
 // - multiline comments vs single-line: latter is blocking start of a ML
@@ -976,13 +977,17 @@ void TextEditor::Render()
 				// Render the cursor
 				if (focused)
 				{
+					float cx = TextDistanceToLineStart(mState.mCursorPosition);
+					float width = 1.0f;
+					ImVec2 cstart(textScreenPos.x + cx, lineStartScreenPos.y);
+					ImVec2 cend(textScreenPos.x + cx + width, lineStartScreenPos.y + mCharAdvance.y);
+                                                          ImGui::GetCurrentContext()->PlatformImePos = cstart;
+                                        
 					auto timeEnd = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 					auto elapsed = timeEnd - mStartTime;
 					if (elapsed > 400)
 					{
-						float width = 1.0f;
 						auto cindex = GetCharacterIndex(mState.mCursorPosition);
-						float cx = TextDistanceToLineStart(mState.mCursorPosition);
 
 						if (mOverwrite && cindex < (int)line.size())
 						{
@@ -1000,8 +1005,6 @@ void TextEditor::Render()
 								width = ImGui::GetFont()->CalcTextSizeA(ImGui::GetFontSize(), FLT_MAX, -1.0f, buf2).x;
 							}
 						}
-						ImVec2 cstart(textScreenPos.x + cx, lineStartScreenPos.y);
-						ImVec2 cend(textScreenPos.x + cx + width, lineStartScreenPos.y + mCharAdvance.y);
 						drawList->AddRectFilled(cstart, cend, mPalette[(int)PaletteIndex::Cursor]);
 						if (elapsed > 800)
 							mStartTime = timeEnd;
