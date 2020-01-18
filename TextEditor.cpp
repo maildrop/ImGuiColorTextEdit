@@ -981,7 +981,8 @@ void TextEditor::Render()
 					float width = 1.0f;
 					ImVec2 cstart(textScreenPos.x + cx, lineStartScreenPos.y);
 					ImVec2 cend(textScreenPos.x + cx + width, lineStartScreenPos.y + mCharAdvance.y);
-                                                          ImGui::GetCurrentContext()->PlatformImePos = cstart;
+					ImGui::GetCurrentContext ()->PlatformImePos = cstart;
+					ImGui::GetCurrentContext ()->WantTextInputNextFrame = 1;
                                         
 					auto timeEnd = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 					auto elapsed = timeEnd - mStartTime;
